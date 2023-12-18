@@ -1,0 +1,396 @@
+class BankAccount {
+    private static int accountCounter = 1000;
+    private int accountNumber;
+    private String accountType;
+    private String firstName;
+    private String lastName;
+    private String ssn;
+    private double balance;
+    private double overdraftLimit;
+    private boolean isOpen;
+
+    public BankAccount(String accountType, String firstName, String lastName, String ssn, double overdraftLimit, boolean isOpen) {
+        this.accountNumber = accountCounter++;
+        this.accountType = accountType;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.ssn = ssn;
+        this.overdraftLimit = overdraftLimit;
+        this.isOpen = isOpen;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getSsn() {
+        return ssn;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public double getOverdraftLimit() {
+        return overdraftLimit;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
+    @Override
+    public String toString() {
+        return accountNumber + "(" + accountType + ") : " + firstName + " : " + lastName + " : " + ssn + " : " + balance + " : " + (isOpen ? "Account Open" : "Account Closed");
+    }
+
+    public void printStatement() {
+        System.out.println("Account Statement for Account Number: " + accountNumber);
+        System.out.println("Balance: " + balance);
+    }
+}
+
+class Transaction {
+    private static int transactionCounter = 1;
+    private int transactionId;
+    private String transactionType;
+    private double amount;
+
+    public Transaction(String transactionType, double amount) {
+        this.transactionId = transactionCounter++;
+        this.transactionType = transactionType;
+        this.amount = amount;
+    }
+
+    public int getTransactionId() {
+        return transactionId;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    @Override
+    public String toString() {
+        return transactionId + " : " + transactionType + " : " + amount;
+    }
+}
+
+class CheckingAccount extends BankAccount {
+    private double overdraftLimit;
+
+    public CheckingAccount(String firstName, String lastName, String ssn, double overdraftLimit, boolean isOpen) {
+        super("Checking", firstName, lastName, ssn, overdraftLimit, isOpen);
+        this.overdraftLimit = overdraftLimit;
+    }
+
+    @Override
+    public void printStatement() {
+        super.printStatement();
+        // Add checking-specific statement details here if needed
+    }
+
+    // Add other checking-specific methods if needed
+}
+
+class SavingAccount extends BankAccount {
+    public SavingAccount(String firstName, String lastName, String ssn, boolean isOpen) {
+        super("Saving", firstName, lastName, ssn, 0, isOpen);
+    }
+
+    @Override
+    public void printStatement() {
+        super.printStatement();
+        // Add saving-specific statement details here if needed
+    }
+
+    // Add other saving-specific methods if needed
+}
+
+class TransactionManager {
+    public static void debitTransaction(BankAccount account, double amount) {
+        // Implement the logic for debit transaction
+        // ...
+    }
+
+    public static void creditTransaction(BankAccount account, double amount) {
+        // Implement the logic for credit transaction
+        // ...
+    }
+
+    public static void printTransactionHistory(BankAccount account) {
+        System.out.println("Transaction History for Account Number: " + account.getAccountNumber());
+        // Implement logic to retrieve and print transaction history
+        // ...
+    }
+}
+
+class Bank {
+    private static ArrayList<BankAccount> accounts = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        int choice;
+        do {
+            displayMenu();
+            System.out.print("Please enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    openCheckingAccount();
+                    break;
+                case 2:
+                    openSavingAccount();
+                    break;
+                case 3:
+                    listAccounts();
+                    break;
+                case 4:
+                    accountStatement();
+                    break;
+                case 5:
+                    depositFunds();
+                    break;
+                case 6:
+                    withdrawFunds();
+                    break;
+                case 7:
+                    closeAccount();
+                    break;
+                case 8:
+                    System.out.println("Exiting the program. Goodbye!");
+                    break;
+                case 9:
+                    viewNumberOfAccounts();
+                    break;
+                case 10:
+                    deleteAccount();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 10.");
+            }
+        } while (choice != 8);
+    }
+
+    private static void displayMenu() {
+        System.out.println("1 – Open a Checking account");
+        System.out.println("2 – Open Saving Account");
+        System.out.println("3 – List Accounts");
+        System.out.println("4 – Account Statement");
+        System.out.println("5 – Deposit funds");
+        System.out.println("6 – Withdraw funds");
+        System.out.println("7 – Close an account");
+        System.out.println("8 – Exit");
+        System.out.println("9 – View number of accounts");
+        System.out.println("10 – Delete an account");
+    }
+
+    private static void openCheckingAccount() {
+        System.out.println("Enter first name:");
+        String firstName = scanner.nextLine();
+        System.out.println("Enter last name:");
+        String lastName = scanner.nextLine();
+        System.out.println("Enter social security number:");
+        String ssn = scanner.nextLine();
+        System.out.println("Enter date of birth (MM-DD-YYYY):");
+        String dob = scanner.nextLine();
+        int age = calculateAge(dob);
+
+        if (age < 16) {
+            System.out.println("Sorry, individuals under 16 years old are not allowed to open a checking account.");
+        } else if (age < 18) {
+            System.out.println("Checking account with overdraft limit is not offered to customers under 18.");
+        } else {
+            System.out.println("Enter overdraft limit:");
+            double overdraftLimit = scanner.nextDouble();
+            scanner.nextLine();
+
+            CheckingAccount account = new CheckingAccount(firstName, lastName, ssn, overdraftLimit, true);
+            accounts.add(account);
+
+            System.out.println("Thank you, the account number is " + account.getAccountNumber());
+        }
+    }
+
+    private static void openSavingAccount() {
+        System.out.println("Enter first name:");
+        String firstName = scanner.nextLine();
+        System.out.println("Enter last name:");
+        String lastName = scanner.nextLine();
+        System.out.println("Enter social security number:");
+        String ssn = scanner.nextLine();
+        System.out.println("Enter date of birth (MM-DD-YYYY):");
+        String dob = scanner.nextLine();
+        int age = calculateAge(dob);
+
+        if (age < 5) {
+            System.out.println("Sorry, individuals under 5 years old are not allowed to open a saving account.");
+        } else {
+            SavingAccount account = new SavingAccount(firstName, lastName, ssn, true);
+            accounts.add(account);
+
+            System.out.println("Thank you, the account number is " + account.getAccountNumber());
+        }
+    }
+
+    private static void listAccounts() {
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts available.");
+        } else {
+            System.out.println("List of Accounts:");
+            for (BankAccount account : accounts) {
+                System.out.println(account);
+            }
+        }
+    }
+
+    private static void accountStatement() {
+        System.out.println("Enter account number:");
+        int accountNumber = scanner.nextInt();
+        scanner.nextLine();
+
+        BankAccount account = findAccount(accountNumber);
+
+        if (account != null) {
+            account.printStatement();
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    private static void depositFunds() {
+        System.out.println("Enter account number:");
+        int accountNumber = scanner.nextInt();
+        scanner.nextLine();
+
+        BankAccount account = findAccount(accountNumber);
+
+        if (account != null) {
+            System.out.println("Enter the amount to deposit:");
+            double amount = scanner.nextDouble();
+            scanner.nextLine();
+
+            if (account.isOpen() || (account.getBalance() + amount <= 0)) {
+                account.setBalance(account.getBalance() + amount);
+                System.out.println("Deposit successful, the new balance is: " + account.getBalance());
+            } else {
+                System.out.println("Deposit failed, the balance is: " + account.getBalance());
+            }
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    private static void withdrawFunds() {
+        System.out.println("Enter account number:");
+        int accountNumber = scanner.nextInt();
+        scanner.nextLine();
+
+        BankAccount account = findAccount(accountNumber);
+
+        if (account != null) {
+            System.out.println("Enter the withdrawal amount:");
+            double amount = scanner.nextDouble();
+            scanner.nextLine();
+
+            if ((account.isOpen() && account.getBalance() + account.getOverdraftLimit() - amount >= 0) ||
+                    (!account.isOpen() && account.getBalance() - amount >= 0)) {
+                account.setBalance(account.getBalance() - amount);
+                System.out.println("Withdrawal successful, the new balance is: " + account.getBalance());
+            } else {
+                System.out.println("Withdrawal failed, the balance is: " + account.getBalance());
+            }
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    private static void closeAccount() {
+        System.out.println("Enter account number to close:");
+        int accountNumber = scanner.nextInt();
+        scanner.nextLine();
+
+        BankAccount account = findAccount(accountNumber);
+
+        if (account != null) {
+            if (account.getBalance() > 0) {
+                System.out.println("Account closed, current balance is " + account.getBalance());
+                account.setOpen(false);
+            } else {
+                System.out.println("Account closed, current balance is 0");
+                account.setOpen(false);
+            }
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    private static void viewNumberOfAccounts() {
+        System.out.println("Number of accounts: " + accounts.size());
+    }
+
+    private static void deleteAccount() {
+        System.out.println("Enter account number to delete:");
+        int accountNumber = scanner.nextInt();
+        scanner.nextLine();
+
+        BankAccount account = findAccount(accountNumber);
+
+        if (account != null) {
+            accounts.remove(account);
+            System.out.println("Account deleted successfully.");
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    private static BankAccount findAccount(int accountNumber) {
+        for (BankAccount account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
+                return account;
+            }
+        }
+        return null;
+    }
+
+    private static int calculateAge(String dob) {
+        // Proper age calculation based on the date of birth
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        try {
+            Date birthDate = sdf.parse(dob);
+            Date currentDate = new Date();
+            long ageInMillis = currentDate.getTime() - birthDate.getTime();
+            return (int) (ageInMillis / (365.25 * 24 * 60 * 60 * 1000));
+        } catch (ParseException e) {
+            // Handle parsing exception
+            e.printStackTrace();
+            return 0; // Default age if parsing fails
+        }
+    }
+}
